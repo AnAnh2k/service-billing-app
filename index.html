@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tính Tiền Dịch Vụ</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        padding: 20px;
+        background-color: #f4f4f4;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: center;
+      }
+      th {
+        background-color: #4caf50;
+        color: white;
+      }
+      .container {
+        max-width: 1111px;
+        margin: auto;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px #ccc;
+      }
+      button {
+        border-radius: 999px;
+        padding: 14px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+      .result-section {
+        margin-top: 20px;
+      }
+      .grand-total {
+        font-size: 1.5em;
+        font-weight: bold;
+        text-align: center;
+        padding: 15px;
+        background-color: #e0ffe0;
+        border: 2px solid #4caf50;
+        border-radius: 8px;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Tính Tiền Dịch Vụ</h2>
+      <label for="totalMoney">Tổng số tiền điện:</label>
+      <input type="number" id="totalMoney" value="1355" />
+      <label for="totalKwh">Tổng số điện:</label>
+      <input type="number" id="totalKwh" value="498" />
+      <label for="waterMoney">Tổng số tiền nước:</label>
+      <input type="number" id="waterMoney" value="288" />
+
+      <table>
+        <tr>
+          <th>Tầng</th>
+          <th>Chỉ Số Mới</th>
+          <th>Chỉ Số Cũ</th>
+          <th>Điện Tiêu Thụ</th>
+          <th>Thành Tiền</th>
+          <th>Tiền điện chung</th>
+          <th>Tiền mạng chung</th>
+          <th>Tiền nước chung</th>
+          <th>Tổng Tiền Mỗi Phòng</th>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><input type="number" id="new2" value="545" /></td>
+          <td><input type="number" id="old2" value="541" /></td>
+          <td id="consumed2">0</td>
+          <td id="cost2">0</td>
+          <td id="sharedCost2">0</td>
+          <td id="netCost2">0</td>
+          <td id="waterCost2">0</td>
+          <td id="total2">0</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td><input type="number" id="new3" value="2948" /></td>
+          <td><input type="number" id="old3" value="2710" /></td>
+          <td id="consumed3">0</td>
+          <td id="cost3">0</td>
+          <td id="sharedCost3">0</td>
+          <td id="netCost3">0</td>
+          <td id="waterCost3">0</td>
+          <td id="total3">0</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td><input type="number" id="new4" value="1191" /></td>
+          <td><input type="number" id="old4" value="1046" /></td>
+          <td id="consumed4">0</td>
+          <td id="cost4">0</td>
+          <td id="sharedCost4">0</td>
+          <td id="netCost4">0</td>
+          <td id="waterCost4">0</td>
+          <td id="total4">0</td>
+        </tr>
+      </table>
+
+      <button onclick="calculateElectricity()">Tính Tiền</button>
+
+      <div class="result-section">
+        <p>
+          Tiền tiêu thụ trên 1 số điện: <span id="pricePerKwhDisplay">0</span>
+        </p>
+        <p>Số điện chung: <span id="sharedKwhDisplay">0</span></p>
+        <p>Số tiền điện chung: <span id="sharedMoneyDisplay">0</span></p>
+        <p>
+          Số tiền điện chung mỗi người:
+          <span id="sharedMoneyPerPersonDisplay">0</span>
+        </p>
+        <p>Tổng tiền mạng: <span id="networkFeeDisplay">215</span></p>
+      </div>
+    </div>
+
+    <script>
+      function calculateElectricity() {
+        const totalMoney = parseFloat(
+          document.getElementById("totalMoney").value
+        );
+        const totalKwh = parseFloat(document.getElementById("totalKwh").value);
+        const waterMoney = parseFloat(
+          document.getElementById("waterMoney").value
+        );
+        const numPeople = 4;
+        // Số người theo tầng dùng điện (để tính tiền điện chung và tiền nước chung)
+        const peoplePerFloor = { 2: 0, 3: 2, 4: 2 };
+
+        // Tính giá tiền tiêu thụ trên 1 số điện (mỗi kWh)
+        const pricePerKwh = totalMoney / totalKwh;
+        document.getElementById("pricePerKwhDisplay").innerText =
+          pricePerKwh.toFixed(2);
+
+        let consumedFloors = {};
+        let totalConsumed = 0;
+
+        // Tính số điện tiêu thụ của từng tầng
+        for (let i = 2; i <= 4; i++) {
+          let newIndex = parseFloat(document.getElementById("new" + i).value);
+          let oldIndex = parseFloat(document.getElementById("old" + i).value);
+          let consumed = newIndex - oldIndex;
+          consumedFloors[i] = consumed;
+          totalConsumed += consumed;
+          document.getElementById("consumed" + i).innerText = consumed;
+        }
+
+        // Tính số điện chung, số tiền điện chung và số tiền điện chung mỗi người
+        let sharedKwh = totalKwh - totalConsumed;
+        let sharedMoney = sharedKwh * pricePerKwh;
+        let sharedMoneyPerPerson = sharedMoney / numPeople;
+
+        document.getElementById("sharedKwhDisplay").innerText = sharedKwh;
+        document.getElementById("sharedMoneyDisplay").innerText =
+          sharedMoney.toFixed(2);
+        document.getElementById("sharedMoneyPerPersonDisplay").innerText =
+          sharedMoneyPerPerson.toFixed(2);
+
+        // Tính tiền nước chung: chia đều theo số người (5 người)
+        const waterMoneyPerPerson = waterMoney / numPeople;
+
+        // Tiền mạng chỉ áp dụng cho tầng 2 và tầng 3:
+        // Tầng 2: 1 người, Tầng 3: 2 người, tổng số người = 3
+        const networkFee = 215;
+        const totalNetworkUsers = 2; //+ 2; // = 3
+        const networkFeePerUser = networkFee / totalNetworkUsers;
+
+        let grandTotal = 0;
+        for (let i = 2; i <= 4; i++) {
+          let cost = consumedFloors[i] * pricePerKwh;
+          let floorSharedCost = sharedMoneyPerPerson * peoplePerFloor[i];
+          let waterCost = waterMoneyPerPerson * peoplePerFloor[i];
+          let networkFeeForFloor = 0;
+          if (i === 2) {
+            networkFeeForFloor = networkFeePerUser * 0;
+          } else if (i === 3) {
+            networkFeeForFloor = networkFeePerUser * 2;
+          }
+          let total = cost + floorSharedCost + waterCost + networkFeeForFloor;
+          // Làm tròn tổng tiền: cộng thêm 1 rồi bỏ phần thập phân
+          let roundedTotal = Math.floor(total + 1);
+
+          document.getElementById("cost" + i).innerText = cost.toFixed(2);
+          document.getElementById("sharedCost" + i).innerText =
+            floorSharedCost.toFixed(2);
+          document.getElementById("netCost" + i).innerText =
+            networkFeeForFloor.toFixed(2);
+          document.getElementById("waterCost" + i).innerText =
+            waterCost.toFixed(2);
+          document.getElementById("total" + i).innerText = roundedTotal;
+          grandTotal += roundedTotal;
+        }
+        // Có thể hiển thị tổng tiền dịch vụ tổng cộng nếu cần
+        alert("Tổng tiền dịch vụ: " + grandTotal);
+        console.log("Tổng tiền dịch vụ: " + grandTotal);
+      }
+    </script>
+  </body>
+</html>
