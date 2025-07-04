@@ -144,6 +144,10 @@
         let tongDienTieuThu = 0;
         let tongTienDienTungTang = 0;
 
+        const soNguoiTungTang = { 2: 1, 3: 2, 4: 2 };
+        const tongSoNguoi =
+          soNguoiTungTang[2] + soNguoiTungTang[3] + soNguoiTungTang[4];
+
         for (let tang = 2; tang <= 4; tang++) {
           const moi = parseFloat(
             document.getElementById(`chiSoMoi${tang}`).value
@@ -174,9 +178,9 @@
         const tienMangMotNguoi = tienMang / 2;
 
         for (let tang = 2; tang <= 4; tang++) {
-          const tiLe = tienDienTungTang[tang] / tongTienDienTungTang;
-          const tienDienChungTang = tienDienChung * tiLe;
-          const tienNuocTang = tongTienNuoc * tiLe;
+          const soNguoi = soNguoiTungTang[tang];
+          const tienDienChungTang = tienDienChung * (soNguoi / tongSoNguoi);
+          const tienNuocTang = tongTienNuoc * (soNguoi / tongSoNguoi);
 
           let tienMangTang = 0;
           if (tang === 3) tienMangTang = tienMangMotNguoi * 2;
